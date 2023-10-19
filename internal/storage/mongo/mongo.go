@@ -84,7 +84,6 @@ func (s Storage) LastVisit(ctx context.Context, userName string) (t time.Time, e
 			return t, storage.ErrNoRecords
 		}
 	}
-	log.Println(result.CreatedAt)
 
 	return result.CreatedAt, nil
 }
