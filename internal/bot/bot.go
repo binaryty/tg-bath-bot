@@ -62,6 +62,8 @@ func (b *Bot) HandleUpdate(ctx context.Context, update tgbotapi.Update) {
 		return
 	}
 
+	log.Printf("[INFO] got a new update: [from]: %s [subject]: %s", update.Message.From.UserName, update.Message.Text)
+
 	cmd := update.Message.Command()
 
 	view, ok := b.cmdView[cmd]

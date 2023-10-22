@@ -8,7 +8,6 @@ import (
 	"github.com/yellowpuki/tg-bath-bot/internal/bot"
 	"github.com/yellowpuki/tg-bath-bot/internal/lib/er"
 	"github.com/yellowpuki/tg-bath-bot/internal/storage"
-	"golang.org/x/exp/slog"
 )
 
 func ViewCmdReg(ctx context.Context, s storage.Storage) bot.ViewFunc {
@@ -43,7 +42,6 @@ func reg(ctx context.Context, s storage.Storage, update tgbotapi.Update) error {
 	}
 
 	if isExist {
-		slog.Info("register: record exists", slog.String("user", user))
 		return er.ErrUserExists
 	}
 

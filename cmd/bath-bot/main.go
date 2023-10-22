@@ -56,7 +56,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		log.Println("bot stopped")
+		log.Println("[INFO] bot stopped")
 	}
 
 }
@@ -68,7 +68,7 @@ func mustToken() string {
 	flag.Parse()
 
 	if *token == "" {
-		log.Fatal("token must be specified")
+		log.Fatal("[FATAL ERROR] token must be specified")
 	}
 
 	return *token
