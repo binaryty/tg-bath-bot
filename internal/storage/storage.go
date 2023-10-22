@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/er"
+	"github.com/yellowpuki/tg-bath-bot/internal/lib/er"
 )
 
 var ErrNoRecords = errors.New("no saved records")
@@ -27,10 +27,10 @@ type Record struct {
 }
 
 // EventHash ...
-func (r Record) EventHash() (string, error) {
+func EventHash(user string) (string, error) {
 	hash := sha1.New()
 
-	if _, err := io.WriteString(hash, r.UserName); err != nil {
+	if _, err := io.WriteString(hash, user); err != nil {
 		return "", er.Wrap("can't calculate hash", err)
 	}
 

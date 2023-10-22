@@ -1,6 +1,11 @@
 package er
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+var ErrUserExists = errors.New("you are already registered")
 
 // Wrap ...
 func Wrap(msg string, err error) error {

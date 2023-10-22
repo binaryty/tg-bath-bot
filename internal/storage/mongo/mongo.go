@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/er"
+	"github.com/yellowpuki/tg-bath-bot/internal/lib/er"
 	"github.com/yellowpuki/tg-bath-bot/internal/storage"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

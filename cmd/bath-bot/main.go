@@ -2,84 +2,61 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/yellowpuki/tg-bath-bot/internal/processor"
-	stor "github.com/yellowpuki/tg-bath-bot/internal/storage"
+	"github.com/yellowpuki/tg-bath-bot/internal/bot"
+	"github.com/yellowpuki/tg-bath-bot/internal/bot/commands"
 	"github.com/yellowpuki/tg-bath-bot/internal/storage/mongo"
-	"golang.org/x/exp/slog"
 )
 
 const (
 	DBUrl          = "mongodb://localhost:27017"
 	ConnectTimeout = 10
 	BotHost        = "api.telegram.org"
+	ChatId         = 6421080707
 )
 
-var appStartTime = time.Now()
+var StartTime = time.Now()
 
 func main() {
 	token := mustToken()
 
-	log := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
-
-	ctx := context.Background()
-
-	storage := mongo.New(ctx, DBUrl, ConnectTimeout)
-
-	bot, err := tgbotapi.NewBotAPI(token)
+	botApi, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
-		log.Error("can't start bot: %s", err)
+		log.Printf("[ERROR] can't start bot: %v", err)
 		os.Exit(1)
 	}
 
-	log.Info("Authorized on account", slog.String("Account", bot.Self.UserName))
+	log.Printf("[INFO] Authorized on account %s", botApi.Self.UserName)
 
-	p := processor.New(bot, storage)
+	log.Println("[INFO] Start processing messages")
 
-	log.Info("Start processing messages")
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer cancel()
 
-	updConfig := tgbotapi.NewUpdate(0)
-	updConfig.Timeout = 60
+	storage := mongo.New(ctx, DBUrl, ConnectTimeout)
 
-	updates := bot.GetUpdatesChan(updConfig)
+	bathBot := bot.New(botApi, storage)
+	bathBot.RegisterCmd("start", commands.ViewCmdStart())
+	bathBot.RegisterCmd("help", commands.ViewCmdHelp())
+	bathBot.RegisterCmd("uptime", commands.ViewCmdUptime(StartTime))
+	bathBot.RegisterCmd("reg", commands.ViewCmdReg(ctx, storage))
+	bathBot.RegisterCmd("last", commands.ViewCmdLast(ctx, storage))
 
-	commandMap := make(map[int64]string)
-
-	for update := range updates {
-		if update.Message != nil {
-			log.Info("New message:", slog.String("from", update.Message.From.UserName), slog.String("message", update.Message.Text))
-
-			command := update.Message.Command()
-
-			userName := update.Message.Chat.UserName
-
-			switch command {
-			case "start":
-				bot.Send(p.StartCmd(update))
-			case "help":
-				bot.Send(p.HelpCmd(update))
-			case "uptime":
-				bot.Send(p.UptimeCmd(update, appStartTime))
-			case "reg":
-				bot.Send(p.RegisterCmd(ctx, update, &stor.Record{UserName: userName}))
-			case "last":
-				bot.Send(p.LastDateCmd(ctx, update))
-			case "menu":
-				bot.Send(p.MenuCmd(update))
-			}
-		} else {
-			if update.CallbackQuery != nil {
-				c := update.CallbackQuery.Data
-				commandMap[update.CallbackQuery.From.ID] = c
-				bot.Send(tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Ok"))
-			}
-
+	if err := bathBot.Run(ctx); err != nil {
+		if errors.Is(err, context.Canceled) {
+			log.Printf("[ERROR] exiting: %v", err)
+			os.Exit(1)
 		}
+
+		log.Println("bot stopped")
 	}
 
 }
