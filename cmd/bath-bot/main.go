@@ -43,7 +43,7 @@ func main() {
 
 	storage := mongo.New(ctx, DBUrl, ConnectTimeout)
 
-	bathBot := bot.New(botApi, storage)
+	bathBot := bot.New(botApi)
 	bathBot.RegisterCmd("start", commands.ViewCmdStart())
 	bathBot.RegisterCmd("help", commands.ViewCmdHelp())
 	bathBot.RegisterCmd("uptime", commands.ViewCmdUptime(StartTime))

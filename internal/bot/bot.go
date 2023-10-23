@@ -7,21 +7,18 @@ import (
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/yellowpuki/tg-bath-bot/internal/storage"
 )
 
 type Bot struct {
 	api     *tgbotapi.BotAPI
 	cmdView map[string]ViewFunc
-	Storage storage.Storage
 }
 
 type ViewFunc func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error
 
-func New(api *tgbotapi.BotAPI, storage storage.Storage) *Bot {
+func New(api *tgbotapi.BotAPI) *Bot {
 	return &Bot{
-		api:     api,
-		Storage: storage,
+		api: api,
 	}
 }
 
