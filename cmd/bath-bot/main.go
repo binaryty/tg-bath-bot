@@ -13,6 +13,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/yellowpuki/tg-bath-bot/internal/bot"
 	"github.com/yellowpuki/tg-bath-bot/internal/bot/commands"
+	"github.com/yellowpuki/tg-bath-bot/internal/storage/db"
 	"github.com/yellowpuki/tg-bath-bot/internal/storage/mongo"
 )
 
@@ -43,12 +44,19 @@ func main() {
 
 	storage := mongo.New(ctx, DBUrl, ConnectTimeout)
 
+	db, err := db.New()
+	if err != nil {
+		log.Printf("[ERROR] can't access article storage: %v", err)
+		os.Exit(1)
+	}
+
 	bathBot := bot.New(botApi)
 	bathBot.RegisterCmd("start", commands.ViewCmdStart())
 	bathBot.RegisterCmd("help", commands.ViewCmdHelp())
 	bathBot.RegisterCmd("uptime", commands.ViewCmdUptime(StartTime))
 	bathBot.RegisterCmd("reg", commands.ViewCmdReg(ctx, storage))
 	bathBot.RegisterCmd("last", commands.ViewCmdLast(ctx, storage))
+	bathBot.RegisterCmd("art", commands.ViewCmdArticles(db))
 
 	if err := bathBot.Run(ctx); err != nil {
 		if errors.Is(err, context.Canceled) {
