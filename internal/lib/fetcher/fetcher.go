@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"path"
+	"net/url"
 	"sync"
 	"time"
 
@@ -68,19 +68,19 @@ func (f *Fetcher) Fetch(ctx context.Context) error {
 	return nil
 }
 
-func (f *Fetcher) fetch(url string, wg *sync.WaitGroup) {
+func (f *Fetcher) fetch(link string, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	response, err := http.Get(url)
+	response, err := http.Get(link)
 	if err != nil {
-		log.Printf("can't get responce from %s: %v", url, err)
+		log.Printf("can't get responce from %s: %v", link, err)
 		return
 	}
 
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		fmt.Printf("%s: status code error: %s\n", url, response.Status)
+		fmt.Printf("%s: status code error: %s\n", link, response.Status)
 		return
 	}
 
@@ -94,9 +94,14 @@ func (f *Fetcher) fetch(url string, wg *sync.WaitGroup) {
 		title, _ := s.Find("h2").Find("span").Html()
 		link, _ := s.Find("h2").Find("a").Attr("href")
 
+		u, err := url.JoinPath("https://habr.com/", link)
+		if err != nil {
+			log.Printf("[ERROR] cant't join url: %v", err)
+		}
+
 		article := db.Article{
 			Title: title,
-			URL:   path.Join("https://habr.com/", link),
+			URL:   u,
 		}
 
 		f.Articles = append(f.Articles, article)

@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "github.com/lib/pq"
 )
@@ -36,6 +37,22 @@ func (s *DB) SaveArticle(article Article) error {
 	}
 
 	return nil
+}
+
+func (s *DB) GetRndArticle() (*Article, error) {
+	query := `SELECT id, title, url FROM articles ORDER BY RANDOM() LIMIT 1`
+
+	var art Article
+
+	err := s.db.QueryRow(query).Scan(&art.ID, &art.Title, &art.URL)
+	if err == sql.ErrNoRows {
+		return nil, fmt.Errorf("no saved articles: %v", err)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("can't pick random article: %v", err)
+	}
+
+	return &art, nil
 }
 
 func (s *DB) GetArticles() ([]Article, error) {

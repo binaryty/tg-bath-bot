@@ -57,6 +57,7 @@ func main() {
 	bathBot.RegisterCmd("reg", commands.ViewCmdReg(ctx, storage))
 	bathBot.RegisterCmd("last", commands.ViewCmdLast(ctx, storage))
 	bathBot.RegisterCmd("art", commands.ViewCmdArticles(db))
+	bathBot.RegisterCmd("rnd", commands.ViewCmdRndArticle(db))
 
 	if err := bathBot.Run(ctx); err != nil {
 		if errors.Is(err, context.Canceled) {
