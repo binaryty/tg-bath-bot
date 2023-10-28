@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/yellowpuki/tg-bath-bot/internal/bot"
 	"github.com/yellowpuki/tg-bath-bot/internal/storage/db"
+	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
 func ViewCmdRndArticle(db *db.DB) bot.ViewFunc {

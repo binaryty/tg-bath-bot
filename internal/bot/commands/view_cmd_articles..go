@@ -6,10 +6,10 @@ import (
 	"log"
 	"time"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/yellowpuki/tg-bath-bot/internal/bot"
 	"github.com/yellowpuki/tg-bath-bot/internal/lib/fetcher"
 	"github.com/yellowpuki/tg-bath-bot/internal/storage/db"
+	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
 func ViewCmdArticles(s *db.DB) bot.ViewFunc {
@@ -33,7 +33,7 @@ func ViewCmdArticles(s *db.DB) bot.ViewFunc {
 			}
 		}(ctx)
 
-		if _, err := bot.Send(tgbotapi.NewMessage(update.FromChat().ID, msgSaved)); err != nil {
+		if _, err := bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, msgSaved)); err != nil {
 			return err
 		}
 		return nil

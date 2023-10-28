@@ -9,6 +9,7 @@ require (
 
 require (
 	github.com/andybalholm/cascadia v1.3.1 // indirect
+	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	golang.org/x/net v0.7.0 // indirect
 )
 
@@ -27,4 +28,5 @@ require (
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
 	golang.org/x/sync v0.4.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
+	gopkg.in/telegram-bot-api.v4 v4.6.4
 )

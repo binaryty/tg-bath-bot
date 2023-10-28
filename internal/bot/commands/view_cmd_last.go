@@ -4,10 +4,10 @@ import (
 	"context"
 	"log"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/yellowpuki/tg-bath-bot/internal/bot"
 	"github.com/yellowpuki/tg-bath-bot/internal/lib/countdown"
 	"github.com/yellowpuki/tg-bath-bot/internal/storage"
+	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
 func ViewCmdLast(ctx context.Context, s storage.Storage) bot.ViewFunc {

@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"time"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	tgbotapi "gopkg.in/telegram-bot-api.v4"
 	"github.com/yellowpuki/tg-bath-bot/internal/bot"
 	"github.com/yellowpuki/tg-bath-bot/internal/bot/commands"
 	"github.com/yellowpuki/tg-bath-bot/internal/storage/db"
@@ -50,7 +50,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	bathBot := bot.New(botApi)
+	bathBot := bot.New(botApi, db)
 	bathBot.RegisterCmd("start", commands.ViewCmdStart())
 	bathBot.RegisterCmd("help", commands.ViewCmdHelp())
 	bathBot.RegisterCmd("uptime", commands.ViewCmdUptime(StartTime))

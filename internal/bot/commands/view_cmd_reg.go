@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/yellowpuki/tg-bath-bot/internal/bot"
 	"github.com/yellowpuki/tg-bath-bot/internal/lib/er"
 	"github.com/yellowpuki/tg-bath-bot/internal/storage"
+	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
 func ViewCmdReg(ctx context.Context, s storage.Storage) bot.ViewFunc {
@@ -17,7 +17,7 @@ func ViewCmdReg(ctx context.Context, s storage.Storage) bot.ViewFunc {
 			return err
 		}
 
-		if _, err := bot.Send(tgbotapi.NewMessage(update.FromChat().ID, MsgReg)); err != nil {
+		if _, err := bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, MsgReg)); err != nil {
 			return err
 		}
 		return nil

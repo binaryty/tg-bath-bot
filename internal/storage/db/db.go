@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 
 	_ "github.com/lib/pq"
 )
@@ -15,6 +16,10 @@ type Article struct {
 
 type DB struct {
 	db *sql.DB
+}
+
+func (a Article) Id() string {
+	return strconv.Itoa(a.ID)
 }
 
 func New() (*DB, error) {
@@ -59,6 +64,30 @@ func (s *DB) GetArticles() ([]Article, error) {
 	query := `SELECT id, title, url FROM articles`
 
 	rows, err := s.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	articles := make([]Article, 0)
+
+	for rows.Next() {
+		var art Article
+		if err := rows.Scan(&art.ID, &art.Title, &art.URL); err != nil {
+			return nil, err
+		}
+
+		articles = append(articles, art)
+	}
+
+	return articles, nil
+}
+
+func (s *DB) GetArticlesByTitle(title string, limit int) ([]Article, error) {
+	query := `SELECT id, title, url FROM articles WHERE LOWER(title) LIKE '%' || $1 || '%'	ORDER BY title DESC LIMIT $2;`
+
+	rows, err := s.db.Query(query, title, limit)
 	if err != nil {
 		return nil, err
 	}
