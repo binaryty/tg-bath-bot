@@ -23,7 +23,7 @@ func (a Article) Id() string {
 }
 
 func New() (*DB, error) {
-	dataSource := "user=postgres password=postgres dbname=articles sslmode=disable"
+	dataSource := "user=postgres password=adfhmR1X dbname=postgres sslmode=disable"
 	db, err := sql.Open("postgres", dataSource)
 	if err != nil {
 		return nil, err

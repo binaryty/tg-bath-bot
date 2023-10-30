@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"runtime/debug"
+	"strconv"
 	"strings"
 	"time"
 
@@ -13,7 +14,7 @@ import (
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
-const queryLimit = 50
+const queryLimit = 200
 
 type Bot struct {
 	api     *tgbotapi.BotAPI
@@ -67,10 +68,11 @@ func (b *Bot) HandleUpdate(ctx context.Context, update tgbotapi.Update) {
 	}()
 
 	if update.Message == nil && update.InlineQuery != nil {
-		if err := b.ProcessInlineQuery(update); err != nil {
-			log.Printf("[ERROR] can't process inline query: %v", err)
-			return
-		}
+		b.handleInlineQuery(update)
+		//if err := b.ProcessInlineQuery(update); err != nil {
+		//	log.Printf("[ERROR] can't process inline query: %v", err)
+		//	return
+		//}
 		log.Printf("[INFO] got a new inline query: [from]: %s [subject]: %s", update.InlineQuery.From.UserName, update.InlineQuery.Query)
 	} else {
 		if update.Message == nil || !update.Message.IsCommand() {
@@ -101,6 +103,10 @@ func (b *Bot) HandleUpdate(ctx context.Context, update tgbotapi.Update) {
 
 func (b *Bot) ProcessInlineQuery(update tgbotapi.Update) error {
 	query := update.InlineQuery.Query
+	queryOffset, _ := strconv.Atoi(update.InlineQuery.Offset)
+	if queryOffset == 0 {
+		queryOffset = 1
+	}
 
 	articles, err := b.db.GetArticlesByTitle(strings.ToLower(query), queryLimit)
 	if err != nil {
@@ -115,17 +121,57 @@ func (b *Bot) ProcessInlineQuery(update tgbotapi.Update) error {
 		results = append(results, res)
 	}
 
-	inlineConf := tgbotapi.InlineConfig{
+	var inlineConf tgbotapi.InlineConfig
+
+	inlineConf = tgbotapi.InlineConfig{
 		InlineQueryID: update.InlineQuery.ID,
 		IsPersonal:    true,
-		CacheTime:     300,
+		CacheTime:     0,
 		Results:       results,
 	}
-
 	_, err = b.api.AnswerInlineQuery(inlineConf)
 	if err != nil {
 		return er.Wrap("answer inline query", err)
 	}
 
 	return nil
+}
+
+func (b *Bot) handleInlineQuery(update tgbotapi.Update) {
+	inlineQuery := update.InlineQuery
+	offset, _ := strconv.Atoi(inlineQuery.Offset)
+
+	results := make([]interface{}, 0)
+
+	articles, _ := b.db.GetArticlesByTitle(strings.ToLower(inlineQuery.Query), queryLimit)
+
+	for _, article := range articles {
+		inlineResult := tgbotapi.NewInlineQueryResultArticle(article.Id(), article.Title, article.Title)
+		results = append(results, inlineResult)
+	}
+
+	if len(results) < 50 {
+		inlineConfig := tgbotapi.InlineConfig{
+			InlineQueryID: inlineQuery.ID,
+			Results:       results,
+			IsPersonal:    true,
+			CacheTime:     0,
+		}
+		_, err := b.api.AnswerInlineQuery(inlineConfig)
+		if err != nil {
+			log.Println(err)
+		}
+	} else {
+		inlineConfig := tgbotapi.InlineConfig{
+			InlineQueryID: inlineQuery.ID,
+			Results:       results,
+			IsPersonal:    true,
+			CacheTime:     0,
+			NextOffset:    strconv.Itoa(offset + 50),
+		}
+		_, err := b.api.AnswerInlineQuery(inlineConfig)
+		if err != nil {
+			log.Println(err)
+		}
+	}
 }
