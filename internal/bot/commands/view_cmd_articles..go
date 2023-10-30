@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -26,7 +27,12 @@ func ViewCmdArticles(s *db.DB) bot.ViewFunc {
 
 				for _, a := range f.Articles {
 					if err := s.SaveArticle(a); err != nil {
-						log.Printf("[ERROR] can't save article: %v", err)
+						errMsg := fmt.Sprintf("[ERROR] can't save article: %v", err)
+						log.Println(errMsg)
+
+						return
+					}
+					if _, err := bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, msgSaved)); err != nil {
 						return
 					}
 				}

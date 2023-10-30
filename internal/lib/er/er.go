@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-var ErrUserExists = errors.New("you are already registered")
+var ErrUserExists = errors.New("вы уже зарегистрированы")
 
 // Wrap ...
 func Wrap(msg string, err error) error {

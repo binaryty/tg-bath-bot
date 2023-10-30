@@ -15,6 +15,7 @@ require (
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
+	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/jmoiron/sqlx v1.3.5

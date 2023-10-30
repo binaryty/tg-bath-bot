@@ -12,7 +12,7 @@ import (
 
 func ViewCmdLast(ctx context.Context, s storage.Storage) bot.ViewFunc {
 	return func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
-		last, err := s.LastVisit(ctx, update.Message.Chat.UserName)
+		last, err := s.LastVisit(ctx, update.Message.From.UserName)
 
 		if err != nil {
 			log.Printf("[ERROR] can't get last event: %v", err)
@@ -20,8 +20,9 @@ func ViewCmdLast(ctx context.Context, s storage.Storage) bot.ViewFunc {
 		}
 
 		reply := "Last event is:\n" + countdown.Countdown{}.Count(last).String()
-
-		if _, err := bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, reply)); err != nil {
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, reply)
+		msg.ParseMode = "markdown"
+		if _, err := bot.Send(msg); err != nil {
 			return err
 		}
 		return nil

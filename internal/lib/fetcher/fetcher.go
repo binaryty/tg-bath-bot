@@ -52,7 +52,7 @@ func (f *Fetcher) Start(ctx context.Context) error {
 func (f *Fetcher) Fetch(ctx context.Context) error {
 	var wg sync.WaitGroup
 
-	for i := 1; i < 40; i++ {
+	for i := 1; i < 50; i++ {
 		url := fmt.Sprintf("%s%d", sourceUrl, i)
 
 		wg.Add(1)
@@ -93,6 +93,7 @@ func (f *Fetcher) fetch(link string, wg *sync.WaitGroup) {
 	doc.Find(".tm-articles-list__item").Each(func(i int, s *goquery.Selection) {
 		title, _ := s.Find("h2").Find("span").Html()
 		link, _ := s.Find("h2").Find("a").Attr("href")
+		t, _ := s.Find("time").Attr("title")
 
 		u, err := url.JoinPath("https://habr.com/", link)
 		if err != nil {
@@ -100,8 +101,9 @@ func (f *Fetcher) fetch(link string, wg *sync.WaitGroup) {
 		}
 
 		article := db.Article{
-			Title: title,
-			URL:   u,
+			Title:        title,
+			URL:          u,
+			Published_at: t,
 		}
 
 		f.Articles = append(f.Articles, article)

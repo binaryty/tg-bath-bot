@@ -33,7 +33,7 @@ func New(ctx context.Context, connectString string, connectTimeout time.Duration
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(connectString))
 	if err != nil {
-		log.Fatalf("[FATAL ERRRO] can't connect to database: %s", err)
+		log.Fatalf("[FATAL ERROR] can't connect to database: %s", err)
 	}
 
 	records := Records{

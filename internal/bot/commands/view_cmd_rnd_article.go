@@ -19,9 +19,15 @@ func ViewCmdRndArticle(db *db.DB) bot.ViewFunc {
 			return err
 		}
 
-		reply := fmt.Sprintf("%s, %s", art.Title, art.URL)
-
-		if _, err := bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, reply)); err != nil {
+		reply := fmt.Sprintf(
+			"[%s](%s)\n"+
+				"Дата публикации на habr: _%s_\n",
+			art.Title,
+			art.URL,
+			art.Published_at)
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, reply)
+		msg.ParseMode = "markdown"
+		if _, err := bot.Send(msg); err != nil {
 			return err
 		}
 		return nil

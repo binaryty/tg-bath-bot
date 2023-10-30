@@ -9,9 +9,10 @@ import (
 )
 
 type Article struct {
-	ID    int
-	Title string
-	URL   string
+	ID           int
+	Title        string
+	URL          string
+	Published_at string
 }
 
 type DB struct {
@@ -35,8 +36,8 @@ func New() (*DB, error) {
 }
 
 func (s *DB) SaveArticle(article Article) error {
-	query := `INSERT INTO articles(title, url) VALUES($1, $2)`
-	_, err := s.db.Exec(query, article.Title, article.URL)
+	query := `INSERT INTO articles(title, url, published_at) VALUES($1, $2, $3) ON CONFLICT DO NOTHING;`
+	_, err := s.db.Exec(query, article.Title, article.URL, article.Published_at)
 	if err != nil {
 		return err
 	}
@@ -45,11 +46,11 @@ func (s *DB) SaveArticle(article Article) error {
 }
 
 func (s *DB) GetRndArticle() (*Article, error) {
-	query := `SELECT id, title, url FROM articles ORDER BY RANDOM() LIMIT 1`
+	query := `SELECT id, title, url, published_at FROM articles ORDER BY RANDOM() LIMIT 1`
 
 	var art Article
 
-	err := s.db.QueryRow(query).Scan(&art.ID, &art.Title, &art.URL)
+	err := s.db.QueryRow(query).Scan(&art.ID, &art.Title, &art.URL, &art.Published_at)
 	if err == sql.ErrNoRows {
 		return nil, fmt.Errorf("no saved articles: %v", err)
 	}
@@ -74,7 +75,7 @@ func (s *DB) GetArticles() ([]Article, error) {
 
 	for rows.Next() {
 		var art Article
-		if err := rows.Scan(&art.ID, &art.Title, &art.URL); err != nil {
+		if err := rows.Scan(&art.ID, &art.Title, &art.URL, &art.Published_at); err != nil {
 			return nil, err
 		}
 
@@ -85,7 +86,7 @@ func (s *DB) GetArticles() ([]Article, error) {
 }
 
 func (s *DB) GetArticlesByTitle(title string, limit int) ([]Article, error) {
-	query := `SELECT id, title, url FROM articles WHERE LOWER(title) LIKE '%' || $1 || '%'	ORDER BY title DESC LIMIT $2;`
+	query := `SELECT id, title, url, published_at FROM articles WHERE LOWER(title) LIKE '%' || $1 || '%'	ORDER BY published_at DESC LIMIT $2;`
 
 	rows, err := s.db.Query(query, title, limit)
 	if err != nil {
@@ -98,7 +99,7 @@ func (s *DB) GetArticlesByTitle(title string, limit int) ([]Article, error) {
 
 	for rows.Next() {
 		var art Article
-		if err := rows.Scan(&art.ID, &art.Title, &art.URL); err != nil {
+		if err := rows.Scan(&art.ID, &art.Title, &art.URL, &art.Published_at); err != nil {
 			return nil, err
 		}
 

@@ -1,8 +1,8 @@
 package commands
 
 const (
-	MsgStart = "Hello! I am a bathhouse bot!"
-	MsgHelp  = "/start - get started\n/help - view help\n/uptime - get uptime\n/reg - register event\n/last - last evenet"
-	MsgReg   = "Succesfuly register."
-	msgSaved = "Articles been saved"
+	MsgStart = "Здарова, я в твой бот команду слал!"
+	MsgHelp  = "/start - Стартануть\n/help - Посмотреть хэлпас\n/uptime - Аптайм бота\n/reg - Зарегаться на ивент\n/last - тайм с последнего ивента\n/art - загрузить список статей с хабра\n/rnd - случайная статься с хабра"
+	MsgReg   = "Вы успешно зарегистрированы."
+	msgSaved = "Статьи загружены"
 )

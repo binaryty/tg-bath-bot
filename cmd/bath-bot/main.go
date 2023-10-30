@@ -10,18 +10,19 @@ import (
 	"syscall"
 	"time"
 
-	tgbotapi "gopkg.in/telegram-bot-api.v4"
 	"github.com/yellowpuki/tg-bath-bot/internal/bot"
 	"github.com/yellowpuki/tg-bath-bot/internal/bot/commands"
+	"github.com/yellowpuki/tg-bath-bot/internal/bot/mw"
 	"github.com/yellowpuki/tg-bath-bot/internal/storage/db"
 	"github.com/yellowpuki/tg-bath-bot/internal/storage/mongo"
+	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
 const (
 	DBUrl          = "mongodb://localhost:27017"
 	ConnectTimeout = 10
 	BotHost        = "api.telegram.org"
-	ChatId         = 6421080707
+	ChatId         = -1002060428320
 )
 
 var StartTime = time.Now()
@@ -54,9 +55,9 @@ func main() {
 	bathBot.RegisterCmd("start", commands.ViewCmdStart())
 	bathBot.RegisterCmd("help", commands.ViewCmdHelp())
 	bathBot.RegisterCmd("uptime", commands.ViewCmdUptime(StartTime))
-	bathBot.RegisterCmd("reg", commands.ViewCmdReg(ctx, storage))
+	bathBot.RegisterCmd("reg", mw.AdmOnly(ChatId, commands.ViewCmdReg(ctx, storage)))
 	bathBot.RegisterCmd("last", commands.ViewCmdLast(ctx, storage))
-	bathBot.RegisterCmd("art", commands.ViewCmdArticles(db))
+	bathBot.RegisterCmd("art", mw.AdmOnly(ChatId, commands.ViewCmdArticles(db)))
 	bathBot.RegisterCmd("rnd", commands.ViewCmdRndArticle(db))
 
 	if err := bathBot.Run(ctx); err != nil {
