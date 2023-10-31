@@ -25,7 +25,7 @@ func CmdRndArticle(db *db.DB) bot.CmdFunc {
 				"Дата публикации на habr: _%s_\n",
 			art.Title,
 			art.URL,
-			art.Published_at)
+			art.PublishedAt)
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, reply)
 		msg.ParseMode = "markdown"
 		if _, err := bot.Send(msg); err != nil {

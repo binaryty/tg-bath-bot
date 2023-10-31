@@ -1,5 +1,7 @@
+run:
+	go run ./... -t 6421080707:AAHHCXxe390fMNsiqUsAtmsj5Zd_njw1640
 build:
-	go build -v ./..
+	go build -v ./...
 
 pgup:
 	docker compose up -d
@@ -19,4 +21,4 @@ mgrup:
 mgrdown:
 	migrate -path migration -database "postgresql://postgres:postgres@localhost:5432/articles?sslmode=disable" -verbose down
 
-.PHONY: build pgup pgdown createdb dropdb mgrup mgrdown
+.PHONY: run build pgup pgdown createdb dropdb mgrup mgrdown 

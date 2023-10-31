@@ -11,7 +11,7 @@ import (
 )
 
 // CmdReg registers a user for an event.
-func CmdReg(ctx context.Context, s storage.Storage) bot.CmdFunc {
+func CmdReg(s storage.Storage) bot.CmdFunc {
 	return func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
 
 		if err := reg(ctx, s, update); err != nil {

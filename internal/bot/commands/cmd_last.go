@@ -11,7 +11,7 @@ import (
 )
 
 // CmdLast displays information on the time tracking of the last event.
-func CmdLast(ctx context.Context, s storage.Storage) bot.CmdFunc {
+func CmdLast(s storage.Storage) bot.CmdFunc {
 	return func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
 		last, err := s.LastVisit(ctx, update.Message.From.UserName)
 

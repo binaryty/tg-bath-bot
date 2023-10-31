@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"os/signal"
@@ -21,7 +22,6 @@ import (
 const (
 	DBUrl          = "mongodb://localhost:27017"
 	ConnectTimeout = 10
-	BotHost        = "api.telegram.org"
 	ChatId         = -1002060428320
 )
 
@@ -43,22 +43,23 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
-	storage := mongo.New(ctx, DBUrl, ConnectTimeout)
+	userStorage := mongo.New(ctx, DBUrl, ConnectTimeout)
 
-	db, err := db.New()
+	articleStorage, err := db.New()
 	if err != nil {
 		log.Printf("[ERROR] can't access article storage: %v", err)
 		os.Exit(1)
 	}
 
-	bathBot := bot.New(botApi, db)
+	bathBot := bot.New(botApi, articleStorage)
+
 	bathBot.RegisterCmd("start", commands.CmdStart())
 	bathBot.RegisterCmd("help", commands.CmdHelp())
 	bathBot.RegisterCmd("uptime", commands.CmdUptime(StartTime))
-	bathBot.RegisterCmd("reg", mw.AdmOnly(ChatId, commands.CmdReg(ctx, storage)))
-	bathBot.RegisterCmd("last", commands.CmdLast(ctx, storage))
-	bathBot.RegisterCmd("art", mw.AdmOnly(ChatId, commands.CmdArticles(db)))
-	bathBot.RegisterCmd("rnd", commands.CmdRndArticle(db))
+	bathBot.RegisterCmd("reg", mw.AdmOnly(ChatId, commands.CmdReg(userStorage)))
+	bathBot.RegisterCmd("last", commands.CmdLast(userStorage))
+	bathBot.RegisterCmd("art", mw.AdmOnly(ChatId, commands.CmdArticles(articleStorage)))
+	bathBot.RegisterCmd("rnd", commands.CmdRndArticle(articleStorage))
 
 	if err := bathBot.Run(ctx); err != nil {
 		if errors.Is(err, context.Canceled) {
@@ -73,6 +74,15 @@ func main() {
 
 // mustToken gets the token from the command line argument.
 func mustToken() string {
+	if len(os.Args) <= 1 {
+		if err := godotenv.Load(); err != nil {
+			log.Fatal("[FATAL ERROR] no .env file found")
+		}
+		token, exists := os.LookupEnv("TOKEN")
+		if exists {
+			return token
+		}
+	}
 	token := flag.String("t", "", "token for access telegram bot")
 
 	flag.Parse()
