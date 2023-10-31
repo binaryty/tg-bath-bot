@@ -32,5 +32,5 @@ func (c Countdown) Count(t time.Time) Countdown {
 
 func (c Countdown) String() string {
 
-	return fmt.Sprintf("Days: %d\nHours: %d\nMinutes: %d\nSeconds: %d", c.d, c.h, c.m, c.s)
+	return fmt.Sprintf("**Days**: %d\n**Hours**: %d\n**Minutes**: %d\n**Seconds**: %d", c.d, c.h, c.m, c.s)
 }

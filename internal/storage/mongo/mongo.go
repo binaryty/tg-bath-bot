@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/er"
+	"github.com/yellowpuki/tg-bath-bot/internal/lib/er"
 	"github.com/yellowpuki/tg-bath-bot/internal/storage"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -33,7 +33,7 @@ func New(ctx context.Context, connectString string, connectTimeout time.Duration
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(connectString))
 	if err != nil {
-		log.Fatalf("can't connect to database: %s", err)
+		log.Fatalf("[FATAL ERROR] can't connect to database: %s", err)
 	}
 
 	records := Records{
@@ -72,6 +72,7 @@ func (s Storage) IsExist(ctx context.Context, h string) (bool, error) {
 	return true, nil
 }
 
+// LastVisit ...
 func (s Storage) LastVisit(ctx context.Context, userName string) (t time.Time, err error) {
 	var result storage.Record
 
