@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/bot"
-	"github.com/yellowpuki/tg-bath-bot/internal/lib/countdown"
+	"github.com/binaryty/tg-bath-bot/internal/bot"
+	"github.com/binaryty/tg-bath-bot/internal/lib/countdown"
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 

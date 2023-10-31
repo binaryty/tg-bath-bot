@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/lib/er"
+	"github.com/binaryty/tg-bath-bot/internal/lib/er"
 )
 
 var ErrNoRecords = errors.New("no saved records")

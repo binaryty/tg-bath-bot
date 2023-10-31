@@ -2,11 +2,12 @@ package commands
 
 import (
 	"context"
+	"errors"
 	"time"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/bot"
-	"github.com/yellowpuki/tg-bath-bot/internal/lib/er"
-	"github.com/yellowpuki/tg-bath-bot/internal/storage"
+	"github.com/binaryty/tg-bath-bot/internal/bot"
+	"github.com/binaryty/tg-bath-bot/internal/lib/er"
+	"github.com/binaryty/tg-bath-bot/internal/storage"
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
@@ -37,7 +38,7 @@ func reg(ctx context.Context, s storage.Storage, update tgbotapi.Update) error {
 
 	isExist, err := s.IsExist(ctx, h)
 	if err != nil {
-		if err != storage.ErrNoRecords {
+		if errors.Is(err, storage.ErrNoRecords) {
 			return er.Wrap("can't register", err)
 		}
 	}

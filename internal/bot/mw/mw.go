@@ -3,7 +3,7 @@ package mw
 import (
 	"context"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/bot"
+	"github.com/binaryty/tg-bath-bot/internal/bot"
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 

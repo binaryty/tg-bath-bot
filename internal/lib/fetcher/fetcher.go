@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/yellowpuki/tg-bath-bot/internal/storage/db"
+	"github.com/binaryty/tg-bath-bot/internal/storage/db"
 )
 
 const sourceUrl = "https://habr.com/ru/hubs/go/articles/page"

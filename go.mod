@@ -1,4 +1,4 @@
-module github.com/yellowpuki/tg-bath-bot
+module github.com/binaryty/tg-bath-bot
 
 go 1.21.3
 

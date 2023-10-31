@@ -1,22 +1,31 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"flag"
+	"github.com/binaryty/tg-bath-bot/internal/bot"
+	"github.com/binaryty/tg-bath-bot/internal/bot/commands"
+	"github.com/binaryty/tg-bath-bot/internal/bot/mw"
+	"github.com/binaryty/tg-bath-bot/internal/storage/db"
+	"github.com/binaryty/tg-bath-bot/internal/storage/mongo"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
 	"os/signal"
-	"syscall"
 	"time"
+)
 
-	"github.com/yellowpuki/tg-bath-bot/internal/bot"
-	"github.com/yellowpuki/tg-bath-bot/internal/bot/commands"
-	"github.com/yellowpuki/tg-bath-bot/internal/bot/mw"
-	"github.com/yellowpuki/tg-bath-bot/internal/storage/db"
-	"github.com/yellowpuki/tg-bath-bot/internal/storage/mongo"
+// TODO: Авторизация
+// TODO: Инициация похода на дату(админ)
+// TODO: Запрос инфы о ближайшем походе (когда планируется?)
+// TODO: Регистрация на событие
+// TODO: Назначение роли (адм)
+// TODO: Запрос занимательного факта о бане
+
+import (
+	"context"
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
+	"syscall"
 )
 
 const (
