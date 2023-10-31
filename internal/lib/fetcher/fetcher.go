@@ -93,6 +93,7 @@ func (f *Fetcher) fetch(link string, wg *sync.WaitGroup) {
 	doc.Find(".tm-articles-list__item").Each(func(i int, s *goquery.Selection) {
 		title, _ := s.Find("h2").Find("span").Html()
 		link, _ := s.Find("h2").Find("a").Attr("href")
+		thunbUrl, _ := s.Find(".tm-article-body").Find("img").Attr("src")
 		t, _ := s.Find("time").Attr("title")
 
 		u, err := url.JoinPath("https://habr.com/", link)
@@ -103,6 +104,7 @@ func (f *Fetcher) fetch(link string, wg *sync.WaitGroup) {
 		article := db.Article{
 			Title:        title,
 			URL:          u,
+			ThumbURL:     thunbUrl,
 			Published_at: t,
 		}
 

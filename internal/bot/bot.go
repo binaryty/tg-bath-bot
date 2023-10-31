@@ -13,16 +13,18 @@ import (
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
-const queryLimit = 150
+const bathSize = 50 // default size of bath inline query offset
 
+// Bot structure.
 type Bot struct {
 	api     *tgbotapi.BotAPI
-	cmdView map[string]ViewFunc
+	cmdMenu map[string]CmdFunc
 	db      *db.DB
 }
 
-type ViewFunc func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error
+type CmdFunc func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error
 
+// New create a new bot instance.
 func New(api *tgbotapi.BotAPI, db *db.DB) *Bot {
 	return &Bot{
 		api: api,
@@ -52,13 +54,13 @@ func (b *Bot) Run(ctx context.Context) error {
 	}
 }
 
-// RegisterCmd register a command in command map in bot.
-func (b *Bot) RegisterCmd(cmd string, view ViewFunc) {
-	if b.cmdView == nil {
-		b.cmdView = make(map[string]ViewFunc, 0)
+// RegisterCmd register a command in the bot menu.
+func (b *Bot) RegisterCmd(cmd string, cmdFunc CmdFunc) {
+	if b.cmdMenu == nil {
+		b.cmdMenu = make(map[string]CmdFunc, 0)
 	}
 
-	b.cmdView[cmd] = view
+	b.cmdMenu[cmd] = cmdFunc
 }
 
 // HandleUpdate handle an updates from telegramm.
@@ -84,12 +86,12 @@ func (b *Bot) HandleUpdate(ctx context.Context, update tgbotapi.Update) {
 
 		cmd := update.Message.Command()
 
-		view, ok := b.cmdView[cmd]
+		cmdFunc, ok := b.cmdMenu[cmd]
 		if !ok {
 			return
 		}
 
-		if err := view(ctx, b.api, update); err != nil {
+		if err := cmdFunc(ctx, b.api, update); err != nil {
 			log.Printf("[ERROR] failed to handle update: %v", err)
 
 			if _, err := b.api.Send(
@@ -105,54 +107,70 @@ func (b *Bot) HandleUpdate(ctx context.Context, update tgbotapi.Update) {
 // ProcessInlineQuery procedding inline query messages from telegram.
 func (b *Bot) ProcessInlineQuery(update tgbotapi.Update) error {
 	inlineQuery := update.InlineQuery
-	offset := 50
-	if inlineQuery.Offset != "" {
-		offset, _ = strconv.Atoi(inlineQuery.Offset)
+	queryOffset, _ := strconv.Atoi(inlineQuery.Offset)
+
+	if queryOffset == 0 {
+		queryOffset = 1
 	}
 
 	results := make([]interface{}, 0)
 
-	articles, err := b.db.GetArticlesByTitle(strings.ToLower(inlineQuery.Query), queryLimit)
+	articles, err := b.db.GetArticlesByTitle(strings.ToLower(inlineQuery.Query))
 	if err != nil {
 		return err
 	}
 
-	for _, article := range articles {
+	for _, article := range offsetResult(queryOffset, articles) {
 		msg := fmt.Sprintf("%s %s", article.Title, article.URL)
-		res := tgbotapi.NewInlineQueryResultArticle(
-			article.Id(),
-			article.Title,
-			msg)
-		results = append(results, res)
+		results = append(results, tgbotapi.InlineQueryResultArticle{
+			Type:  "article",
+			ID:    article.Id(),
+			Title: article.Title,
+			InputMessageContent: tgbotapi.InputTextMessageContent{
+				Text: msg,
+			},
+			ThumbURL: article.ThumbURL,
+		})
 	}
 
-	fmt.Println(len(results), "|", offset)
-
 	if len(results) < 50 {
-		inlineConfig := tgbotapi.InlineConfig{
+		_, err := b.api.AnswerInlineQuery(tgbotapi.InlineConfig{
 			InlineQueryID: inlineQuery.ID,
 			Results:       results,
 			IsPersonal:    true,
 			CacheTime:     0,
-		}
-		_, err := b.api.AnswerInlineQuery(inlineConfig)
+		})
+
 		if err != nil {
-			log.Println(err)
+			return err
 		}
 	} else {
-		inlineConfig := tgbotapi.InlineConfig{
+		_, err := b.api.AnswerInlineQuery(tgbotapi.InlineConfig{
 			InlineQueryID: inlineQuery.ID,
 			Results:       results,
 			IsPersonal:    true,
 			CacheTime:     0,
-			NextOffset:    strconv.Itoa(offset + 50),
-		}
+			NextOffset:    strconv.Itoa(queryOffset + bathSize),
+		})
 
-		_, err := b.api.AnswerInlineQuery(inlineConfig)
 		if err != nil {
-			log.Println(err)
+			return err
 		}
 	}
 
 	return nil
+}
+
+// offsetResult ...
+func offsetResult(startNum int, articles []db.Article) []db.Article {
+	overallItems := len(articles)
+
+	switch {
+	case startNum >= overallItems:
+		return []db.Article{}
+	case startNum+bathSize >= overallItems:
+		return articles[startNum:overallItems]
+	default:
+		return articles[startNum : startNum+bathSize]
+	}
 }

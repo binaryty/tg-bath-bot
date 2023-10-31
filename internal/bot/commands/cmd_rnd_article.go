@@ -10,7 +10,8 @@ import (
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
-func ViewCmdRndArticle(db *db.DB) bot.ViewFunc {
+// CmdRndArticle outputs a random article from saved in the database.
+func CmdRndArticle(db *db.DB) bot.CmdFunc {
 	return func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
 		art, err := db.GetRndArticle()
 

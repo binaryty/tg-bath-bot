@@ -10,7 +10,8 @@ import (
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
-func ViewCmdReg(ctx context.Context, s storage.Storage) bot.ViewFunc {
+// CmdReg registers a user for an event.
+func CmdReg(ctx context.Context, s storage.Storage) bot.CmdFunc {
 	return func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
 
 		if err := reg(ctx, s, update); err != nil {

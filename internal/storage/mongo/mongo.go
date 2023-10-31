@@ -72,6 +72,7 @@ func (s Storage) IsExist(ctx context.Context, h string) (bool, error) {
 	return true, nil
 }
 
+// LastVisit ...
 func (s Storage) LastVisit(ctx context.Context, userName string) (t time.Time, err error) {
 	var result storage.Record
 

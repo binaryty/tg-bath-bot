@@ -7,7 +7,8 @@ import (
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
-func AdmOnly(chatId int64, next bot.ViewFunc) bot.ViewFunc {
+// AdmOnly middleware to restrict access only for group admins.
+func AdmOnly(chatId int64, next bot.CmdFunc) bot.CmdFunc {
 	return func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
 		admins, err := bot.GetChatAdministrators(
 			tgbotapi.ChatConfig{
@@ -20,13 +21,13 @@ func AdmOnly(chatId int64, next bot.ViewFunc) bot.ViewFunc {
 		}
 
 		for _, adm := range admins {
-			if adm.User.ID == SentFrom(update).ID {
+			if adm.User.ID == sentFrom(update).ID {
 				return next(ctx, bot, update)
 			}
 		}
 
 		if _, err := bot.Send(tgbotapi.NewMessage(
-			FromChat(update).ID,
+			fromChat(update).ID,
 			"У вас нет прав на выполнение этой команды.",
 		)); err != nil {
 			return err
@@ -36,7 +37,7 @@ func AdmOnly(chatId int64, next bot.ViewFunc) bot.ViewFunc {
 	}
 }
 
-func SentFrom(u tgbotapi.Update) *tgbotapi.User {
+func sentFrom(u tgbotapi.Update) *tgbotapi.User {
 	switch {
 	case u.Message != nil:
 		return u.Message.From
@@ -58,7 +59,7 @@ func SentFrom(u tgbotapi.Update) *tgbotapi.User {
 	}
 }
 
-func FromChat(u tgbotapi.Update) *tgbotapi.Chat {
+func fromChat(u tgbotapi.Update) *tgbotapi.Chat {
 	switch {
 	case u.Message != nil:
 		return u.Message.Chat

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/yellowpuki/tg-bath-bot/internal/bot"
@@ -13,7 +14,8 @@ import (
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
-func ViewCmdArticles(s *db.DB) bot.ViewFunc {
+// CmdArticles uploads articles to the database.
+func CmdArticles(s *db.DB) bot.CmdFunc {
 	return func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
 		f := fetcher.New(500 * time.Second)
 
@@ -32,16 +34,14 @@ func ViewCmdArticles(s *db.DB) bot.ViewFunc {
 
 						return
 					}
-					if _, err := bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, msgSaved)); err != nil {
-						return
-					}
+				}
+
+				if _, err := bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, msgSaved+": "+strconv.Itoa(len(f.Articles)))); err != nil {
+					return
 				}
 			}
 		}(ctx)
 
-		if _, err := bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, msgSaved)); err != nil {
-			return err
-		}
 		return nil
 	}
 }

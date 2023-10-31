@@ -52,13 +52,13 @@ func main() {
 	}
 
 	bathBot := bot.New(botApi, db)
-	bathBot.RegisterCmd("start", commands.ViewCmdStart())
-	bathBot.RegisterCmd("help", commands.ViewCmdHelp())
-	bathBot.RegisterCmd("uptime", commands.ViewCmdUptime(StartTime))
-	bathBot.RegisterCmd("reg", mw.AdmOnly(ChatId, commands.ViewCmdReg(ctx, storage)))
-	bathBot.RegisterCmd("last", commands.ViewCmdLast(ctx, storage))
-	bathBot.RegisterCmd("art", mw.AdmOnly(ChatId, commands.ViewCmdArticles(db)))
-	bathBot.RegisterCmd("rnd", commands.ViewCmdRndArticle(db))
+	bathBot.RegisterCmd("start", commands.CmdStart())
+	bathBot.RegisterCmd("help", commands.CmdHelp())
+	bathBot.RegisterCmd("uptime", commands.CmdUptime(StartTime))
+	bathBot.RegisterCmd("reg", mw.AdmOnly(ChatId, commands.CmdReg(ctx, storage)))
+	bathBot.RegisterCmd("last", commands.CmdLast(ctx, storage))
+	bathBot.RegisterCmd("art", mw.AdmOnly(ChatId, commands.CmdArticles(db)))
+	bathBot.RegisterCmd("rnd", commands.CmdRndArticle(db))
 
 	if err := bathBot.Run(ctx); err != nil {
 		if errors.Is(err, context.Canceled) {
