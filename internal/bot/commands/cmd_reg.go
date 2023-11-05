@@ -2,16 +2,17 @@ package commands
 
 import (
 	"context"
+	"errors"
 	"time"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/bot"
-	"github.com/yellowpuki/tg-bath-bot/internal/lib/er"
-	"github.com/yellowpuki/tg-bath-bot/internal/storage"
+	"github.com/binaryty/tg-bath-bot/internal/bot"
+	"github.com/binaryty/tg-bath-bot/internal/lib/er"
+	"github.com/binaryty/tg-bath-bot/internal/storage"
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
 // CmdReg registers a user for an event.
-func CmdReg(ctx context.Context, s storage.Storage) bot.CmdFunc {
+func CmdReg(s storage.Storage) bot.CmdFunc {
 	return func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
 
 		if err := reg(ctx, s, update); err != nil {
@@ -37,7 +38,7 @@ func reg(ctx context.Context, s storage.Storage, update tgbotapi.Update) error {
 
 	isExist, err := s.IsExist(ctx, h)
 	if err != nil {
-		if err != storage.ErrNoRecords {
+		if errors.Is(err, storage.ErrNoRecords) {
 			return er.Wrap("can't register", err)
 		}
 	}

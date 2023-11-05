@@ -4,14 +4,14 @@ import (
 	"context"
 	"log"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/bot"
-	"github.com/yellowpuki/tg-bath-bot/internal/lib/countdown"
-	"github.com/yellowpuki/tg-bath-bot/internal/storage"
+	"github.com/binaryty/tg-bath-bot/internal/bot"
+	"github.com/binaryty/tg-bath-bot/internal/lib/countdown"
+	"github.com/binaryty/tg-bath-bot/internal/storage"
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
 // CmdLast displays information on the time tracking of the last event.
-func CmdLast(ctx context.Context, s storage.Storage) bot.CmdFunc {
+func CmdLast(s storage.Storage) bot.CmdFunc {
 	return func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
 		last, err := s.LastVisit(ctx, update.Message.From.UserName)
 

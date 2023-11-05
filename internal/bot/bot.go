@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/storage/db"
+	"github.com/binaryty/tg-bath-bot/internal/storage/db"
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
@@ -57,7 +57,7 @@ func (b *Bot) Run(ctx context.Context) error {
 // RegisterCmd register a command in the bot menu.
 func (b *Bot) RegisterCmd(cmd string, cmdFunc CmdFunc) {
 	if b.cmdMenu == nil {
-		b.cmdMenu = make(map[string]CmdFunc, 0)
+		b.cmdMenu = make(map[string]CmdFunc)
 	}
 
 	b.cmdMenu[cmd] = cmdFunc

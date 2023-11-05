@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/bot"
-	"github.com/yellowpuki/tg-bath-bot/internal/lib/fetcher"
-	"github.com/yellowpuki/tg-bath-bot/internal/storage/db"
+	"github.com/binaryty/tg-bath-bot/internal/bot"
+	"github.com/binaryty/tg-bath-bot/internal/lib/fetcher"
+	"github.com/binaryty/tg-bath-bot/internal/storage/db"
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 

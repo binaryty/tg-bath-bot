@@ -4,12 +4,12 @@ import (
 	"context"
 	"time"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/bot"
-	"github.com/yellowpuki/tg-bath-bot/internal/lib/countdown"
+	"github.com/binaryty/tg-bath-bot/internal/bot"
+	"github.com/binaryty/tg-bath-bot/internal/lib/countdown"
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
-// CmdUpteime displays information on the time from the start of the bot.
+// CmdUptime displays information on the time from the start of the bot.
 func CmdUptime(t time.Time) bot.CmdFunc {
 	return func(ctx context.Context, bot *tgbotapi.BotAPI, update tgbotapi.Update) error {
 		reply := countdown.Countdown{}.Count(t).String()

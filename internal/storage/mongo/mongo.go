@@ -2,11 +2,12 @@ package mongo
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/lib/er"
-	"github.com/yellowpuki/tg-bath-bot/internal/storage"
+	"github.com/binaryty/tg-bath-bot/internal/lib/er"
+	"github.com/binaryty/tg-bath-bot/internal/storage"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -63,7 +64,7 @@ func (s Storage) IsExist(ctx context.Context, h string) (bool, error) {
 	err := s.records.Collection.FindOne(ctx, bson.M{"eventtoken": h}).Decode(&result)
 
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return false, storage.ErrNoRecords
 		}
 		return false, er.Wrap("can't check is record exists", err)
@@ -81,7 +82,7 @@ func (s Storage) LastVisit(ctx context.Context, userName string) (t time.Time, e
 	err = s.records.Collection.FindOne(ctx, bson.D{{Key: "username", Value: userName}}, opts).Decode(&result)
 
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return t, storage.ErrNoRecords
 		}
 	}

@@ -1,4 +1,4 @@
-module github.com/yellowpuki/tg-bath-bot
+module github.com/binaryty/tg-bath-bot
 
 go 1.21.3
 
@@ -9,6 +9,7 @@ require (
 
 require (
 	github.com/andybalholm/cascadia v1.3.1 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	golang.org/x/net v0.7.0 // indirect
 )

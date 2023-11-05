@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/bot"
-	"github.com/yellowpuki/tg-bath-bot/internal/storage/db"
+	"github.com/binaryty/tg-bath-bot/internal/bot"
+	"github.com/binaryty/tg-bath-bot/internal/storage/db"
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
