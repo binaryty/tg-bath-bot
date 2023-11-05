@@ -63,7 +63,7 @@ func (b *Bot) RegisterCmd(cmd string, cmdFunc CmdFunc) {
 	b.cmdMenu[cmd] = cmdFunc
 }
 
-// HandleUpdate handle an updates from telegramm.
+// HandleUpdate handle an updates from telegram.
 func (b *Bot) HandleUpdate(ctx context.Context, update tgbotapi.Update) {
 	defer func() {
 		if p := recover(); p != nil {
@@ -104,7 +104,7 @@ func (b *Bot) HandleUpdate(ctx context.Context, update tgbotapi.Update) {
 	}
 }
 
-// ProcessInlineQuery procedding inline query messages from telegram.
+// ProcessInlineQuery processing inline query messages from telegram.
 func (b *Bot) ProcessInlineQuery(update tgbotapi.Update) error {
 	inlineQuery := update.InlineQuery
 	queryOffset, _ := strconv.Atoi(inlineQuery.Offset)

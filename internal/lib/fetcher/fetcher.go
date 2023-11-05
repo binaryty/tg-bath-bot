@@ -102,10 +102,10 @@ func (f *Fetcher) fetch(link string, wg *sync.WaitGroup) {
 		}
 
 		article := db.Article{
-			Title:        title,
-			URL:          u,
-			ThumbURL:     thunbUrl,
-			Published_at: t,
+			Title:       title,
+			URL:         u,
+			ThumbURL:    thunbUrl,
+			PublishedAt: t,
 		}
 
 		f.Articles = append(f.Articles, article)

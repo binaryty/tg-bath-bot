@@ -2,7 +2,10 @@ module github.com/yellowpuki/tg-bath-bot
 
 go 1.21.3
 
-require go.mongodb.org/mongo-driver v1.12.1
+require (
+	github.com/joho/godotenv v1.5.1
+	go.mongodb.org/mongo-driver v1.12.1
+)
 
 require (
 	github.com/andybalholm/cascadia v1.3.1 // indirect

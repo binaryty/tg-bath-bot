@@ -10,11 +10,11 @@ import (
 
 // Article struct.
 type Article struct {
-	ID           int
-	Title        string
-	URL          string
-	ThumbURL     string
-	Published_at string
+	ID          int
+	Title       string
+	URL         string
+	ThumbURL    string
+	PublishedAt string
 }
 
 // DB struct.
@@ -43,7 +43,7 @@ func New() (*DB, error) {
 // SaveArticle ...
 func (s *DB) SaveArticle(article Article) error {
 	query := `INSERT INTO articles(title, url, thumb_url, published_at) VALUES($1, $2, $3, $4) ON CONFLICT DO NOTHING;`
-	_, err := s.db.Exec(query, article.Title, article.URL, article.ThumbURL, article.Published_at)
+	_, err := s.db.Exec(query, article.Title, article.URL, article.ThumbURL, article.PublishedAt)
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func (s *DB) GetRndArticle() (*Article, error) {
 
 	var art Article
 
-	err := s.db.QueryRow(query).Scan(&art.ID, &art.Title, &art.URL, &art.Published_at)
+	err := s.db.QueryRow(query).Scan(&art.ID, &art.Title, &art.URL, &art.PublishedAt)
 	if err == sql.ErrNoRows {
 		return nil, fmt.Errorf("no saved articles: %v", err)
 	}
@@ -83,7 +83,7 @@ func (s *DB) GetArticles() ([]Article, error) {
 
 	for rows.Next() {
 		var art Article
-		if err := rows.Scan(&art.ID, &art.Title, &art.URL, &art.Published_at); err != nil {
+		if err := rows.Scan(&art.ID, &art.Title, &art.URL, &art.PublishedAt); err != nil {
 			return nil, err
 		}
 
@@ -108,7 +108,7 @@ func (s *DB) GetArticlesByTitle(title string) ([]Article, error) {
 
 	for rows.Next() {
 		var art Article
-		if err := rows.Scan(&art.ID, &art.Title, &art.URL, &art.ThumbURL, &art.Published_at); err != nil {
+		if err := rows.Scan(&art.ID, &art.Title, &art.URL, &art.ThumbURL, &art.PublishedAt); err != nil {
 			return nil, err
 		}
 
