@@ -3,6 +3,7 @@ package fetcher
 import (
 	"context"
 	"fmt"
+	"github.com/binaryty/tg-bath-bot/internal/storage/db"
 	"log"
 	"net/http"
 	"net/url"
@@ -10,7 +11,6 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/yellowpuki/tg-bath-bot/internal/storage/db"
 )
 
 const sourceUrl = "https://habr.com/ru/hubs/go/articles/page"
@@ -33,7 +33,7 @@ func (f *Fetcher) Start(ctx context.Context) error {
 	ticker := time.NewTicker(f.fetchInterval)
 	defer ticker.Stop()
 
-	if err := f.Fetch(ctx); err != nil {
+	if err := f.Fetch(); err != nil {
 		return err
 	}
 
@@ -42,24 +42,24 @@ func (f *Fetcher) Start(ctx context.Context) error {
 		case <-ctx.Done():
 			return ctx.Err()
 		case <-ticker.C:
-			if err := f.Fetch(ctx); err != nil {
+			if err := f.Fetch(); err != nil {
 				return err
 			}
 		}
 	}
 }
 
-func (f *Fetcher) Fetch(ctx context.Context) error {
+func (f *Fetcher) Fetch() error {
 	var wg sync.WaitGroup
 
 	for i := 1; i < 50; i++ {
-		url := fmt.Sprintf("%s%d", sourceUrl, i)
+		link := fmt.Sprintf("%s%d", sourceUrl, i)
 
 		wg.Add(1)
 
 		go func(url string) {
 			f.fetch(url, &wg)
-		}(url)
+		}(link)
 
 	}
 
@@ -77,7 +77,7 @@ func (f *Fetcher) fetch(link string, wg *sync.WaitGroup) {
 		return
 	}
 
-	defer response.Body.Close()
+	defer func() { _ = response.Body.Close() }()
 
 	if response.StatusCode != http.StatusOK {
 		fmt.Printf("%s: status code error: %s\n", link, response.Status)
@@ -93,7 +93,7 @@ func (f *Fetcher) fetch(link string, wg *sync.WaitGroup) {
 	doc.Find(".tm-articles-list__item").Each(func(i int, s *goquery.Selection) {
 		title, _ := s.Find("h2").Find("span").Html()
 		link, _ := s.Find("h2").Find("a").Attr("href")
-		thunbUrl, _ := s.Find(".tm-article-body").Find("img").Attr("src")
+		thumbUrl, _ := s.Find(".tm-article-body").Find("img").Attr("src")
 		t, _ := s.Find("time").Attr("title")
 
 		u, err := url.JoinPath("https://habr.com/", link)
@@ -104,7 +104,7 @@ func (f *Fetcher) fetch(link string, wg *sync.WaitGroup) {
 		article := db.Article{
 			Title:       title,
 			URL:         u,
-			ThumbURL:    thunbUrl,
+			ThumbURL:    thumbUrl,
 			PublishedAt: t,
 		}
 

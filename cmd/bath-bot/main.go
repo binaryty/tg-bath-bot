@@ -4,6 +4,11 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"github.com/binaryty/tg-bath-bot/internal/bot"
+	"github.com/binaryty/tg-bath-bot/internal/bot/commands"
+	"github.com/binaryty/tg-bath-bot/internal/bot/mw"
+	"github.com/binaryty/tg-bath-bot/internal/storage/db"
+	"github.com/binaryty/tg-bath-bot/internal/storage/mongo"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -11,11 +16,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/yellowpuki/tg-bath-bot/internal/bot"
-	"github.com/yellowpuki/tg-bath-bot/internal/bot/commands"
-	"github.com/yellowpuki/tg-bath-bot/internal/bot/mw"
-	"github.com/yellowpuki/tg-bath-bot/internal/storage/db"
-	"github.com/yellowpuki/tg-bath-bot/internal/storage/mongo"
 	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
@@ -55,8 +55,8 @@ func main() {
 	bathBot.RegisterCmd("start", commands.CmdStart())
 	bathBot.RegisterCmd("help", commands.CmdHelp())
 	bathBot.RegisterCmd("uptime", commands.CmdUptime(StartTime))
-	bathBot.RegisterCmd("reg", mw.AdmOnly(ChatId, commands.CmdReg(ctx, userStorage)))
-	bathBot.RegisterCmd("last", commands.CmdLast(ctx, userStorage))
+	bathBot.RegisterCmd("reg", mw.AdmOnly(ChatId, commands.CmdReg(userStorage)))
+	bathBot.RegisterCmd("last", commands.CmdLast(userStorage))
 	bathBot.RegisterCmd("art", mw.AdmOnly(ChatId, commands.CmdArticles(articleStorage)))
 	bathBot.RegisterCmd("rnd", commands.CmdRndArticle(articleStorage))
 

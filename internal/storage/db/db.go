@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -58,7 +59,7 @@ func (s *DB) GetRndArticle() (*Article, error) {
 	var art Article
 
 	err := s.db.QueryRow(query).Scan(&art.ID, &art.Title, &art.URL, &art.PublishedAt)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, fmt.Errorf("no saved articles: %v", err)
 	}
 	if err != nil {
@@ -77,7 +78,7 @@ func (s *DB) GetArticles() ([]Article, error) {
 		return nil, err
 	}
 
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	articles := make([]Article, 0)
 
@@ -102,7 +103,7 @@ func (s *DB) GetArticlesByTitle(title string) ([]Article, error) {
 		return nil, err
 	}
 
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	articles := make([]Article, 0)
 
